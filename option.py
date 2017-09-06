@@ -4,6 +4,7 @@ class Option:
         self.totalBits = 0
         self.validNames = validNames
         self.name = validNames[0]
+        self.number = validNames[1]
         
     def add_vote(self, vote):
         self.votes.append(vote)

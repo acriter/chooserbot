@@ -77,8 +77,16 @@ class TwitchBot(irc.bot.SingleServerIRCBot):
         if not self.user_is_mod(e):
             return;
         if self.poll is not None:
-            self.end_poll()
+            self.end_poll(e)
         self.poll = p.Poll(args)
+
+        message1 = "Starting poll! Options are: "
+        for option in self.poll.optionList:
+            message1 += (option.name + " (" + str(option.number) + ")" + ", ")
+        message1 = message1[:-2]
+        self.connection.privmsg(self.channel, message1)
+        self.connection.privmsg(self.channel, "Cast a vote by typing !vote, then a choice, then cheering for bits!")
+        self.connection.privmsg(self.channel, "Examples: \"!vote " + self.poll.optionList[0].name + " cheer50\" OR \"!vote 1 cheer5\"")
         print "poll started"
         
     def add_vote(self, e, args):
