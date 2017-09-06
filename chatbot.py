@@ -20,6 +20,7 @@ class TwitchBot(irc.bot.SingleServerIRCBot):
         self.client_id = client_id
         self.token = token
         self.channel = '#' + channel
+        self.poll = None
 
         # Get the channel id, we will need this for v5 API calls
         url = 'https://api.twitch.tv/kraken/users?login=' + channel
@@ -44,6 +45,14 @@ class TwitchBot(irc.bot.SingleServerIRCBot):
         c.join(self.channel)
 
     def on_pubmsg(self, c, e):
+
+        for item in e.tags:
+            if 'bits' in item.values():
+                bits = item['value']
+                print "found bits!"
+                print bits
+                print e
+
         command = e.arguments[0].split(' ')[0]
         if command == '!' + cfg.STARTPOLL:
             if len(e.arguments[0]) > 2:
@@ -57,8 +66,18 @@ class TwitchBot(irc.bot.SingleServerIRCBot):
             print 'Received command: ' + cmd
             self.do_command(e, cmd)
         return
+
+    def user_is_mod(self, e):
+        for item in e.tags:
+            if 'mod' in item.values():
+                return bool(item['value'])
+        return False 
         
     def add_poll(self, e, args):
+        if not self.user_is_mod(e):
+            return;
+        if self.poll is not None:
+            self.end_poll()
         self.poll = p.Poll(args)
         print "poll started"
         
@@ -93,48 +112,34 @@ class TwitchBot(irc.bot.SingleServerIRCBot):
                     if loop == False:
                         break
                 if loop == False:
-                    break
+                    break         
 
-    def end_poll(self, e, args):
-        self.poll = None
+    def end_poll(self, e):
+        if not self.user_is_mod(e):
+            return;
+
+        if self.poll is not None:
+            self.display_scores(e)
+            self.connection.privmsg(self.channel, "Ending poll! Winner is " + self.poll.winning_option().name + "!")
+
         print "poll ended"
+        self.poll = None
 
-    def do_command(self, e, cmd):
+    def display_scores(self, e):
         c = self.connection
-
-        # Poll the API to get current game.
-        if cmd == "game":
-            url = 'https://api.twitch.tv/kraken/channels/' + self.channel_id
-            headers = {'Client-ID': self.client_id, 'Accept': 'application/vnd.twitchtv.v5+json'}
-            r = requests.get(url, headers=headers).json()
-            c.privmsg(self.channel, r['display_name'] + ' is currently playing ' + r['game'])
-
-        # Poll the API the get the current status of the stream
-        elif cmd == "title":
-            url = 'https://api.twitch.tv/kraken/channels/' + self.channel_id
-            headers = {'Client-ID': self.client_id, 'Accept': 'application/vnd.twitchtv.v5+json'}
-            r = requests.get(url, headers=headers).json()
-            c.privmsg(self.channel, r['display_name'] + ' channel title is currently ' + (r['status'] or 'offline'))
-
-        # Provide basic information to viewers for specific commands
-        elif cmd == "raffle":
-            message = "This is an example bot, replace this text with your raffle text."
-            c.privmsg(self.channel, message)
-        elif cmd == "schedule":
-            message = "This is an example bot, replace this text with your schedule text."            
-            c.privmsg(self.channel, message)
-            
-        elif cmd == "scores":
-            if self.poll is not None:
+        if self.poll is not None:
                 message = ""
                 for option in self.poll.optionList:
-                    message += (option.validNames[0] + ": " + str(option.totalBits) + "!" + "     ")
+                    message += (option.name + ": " + str(option.totalBits) + "!" + "     ")
 
                 c.privmsg(self.channel, message)
 
-        # The command was not recognized
-        else:
-            c.privmsg(self.channel, "Did not understand command: " + cmd)
+    def do_command(self, e, cmd):            
+        if cmd == cfg.SCORES:
+            self.display_scores(e)
+        elif cmd == cfg.ENDPOLL:
+            self.end_poll(e)
+            
 
 def main():
     if len(sys.argv) != 5:

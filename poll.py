@@ -10,4 +10,15 @@ class Poll:
     
     def add_vote(self, option, vote):
         option.add_vote(vote)
+
+    def winning_option(self):
+    	#TODO: mention ties / add tie-breakers
+    	highest = 0
+    	winner = self.optionList[0]
+    	for option in self.optionList:
+    		if option.totalBits > highest:
+    			winner = option
+    			highest = option.totalBits
+    	return winner
+
         
