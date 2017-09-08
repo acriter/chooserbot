@@ -60,6 +60,9 @@ class TwitchBot(irc.bot.SingleServerIRCBot):
         elif command == '!' + cfg.VOTE:
             if len(e.arguments[0]) > 1:
                 self.add_vote(e, e.arguments[0].split(' ')[1:])
+        elif command == '!' + cfg.SETQUESTION:
+            question = e.arguments[0].split(' ')[1:]
+            self.set_question(e, ' '.join(question))
         
         elif e.arguments[0][:1] == '!':
             cmd = command[1:]
@@ -72,19 +75,28 @@ class TwitchBot(irc.bot.SingleServerIRCBot):
             if 'mod' in item.values():
                 return bool(item['value'])
         return False 
+
+    def set_question(self, e, question):
+        self.poll = p.Poll(question);
         
     def add_poll(self, e, args):
         if not self.user_is_mod(e):
             return;
-        if self.poll is not None:
+        if self.poll is None:
+            return;
+        if self.poll.question is None:
+            return;
+        if self.poll.has_started():
             self.end_poll(e)
-        self.poll = p.Poll(args)
+        
+        self.poll.set_options(args)
 
         message1 = "Starting poll! Options are: "
         for option in self.poll.optionList:
             message1 += (option.name + " (" + str(option.number) + ")" + ", ")
         message1 = message1[:-2]
         self.connection.privmsg(self.channel, message1)
+        self.connection.privmsg(self.channel, "Question: " + self.poll.question)
         self.connection.privmsg(self.channel, "Cast a vote by typing !vote, then a choice, then cheering for bits!")
         self.connection.privmsg(self.channel, "Examples: \"!vote " + self.poll.optionList[0].name + " cheer50\" OR \"!vote 1 cheer5\"")
         print "poll started"
