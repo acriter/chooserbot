@@ -1,15 +1,10 @@
-<html>
-<body>
-
-<?php
+<?php session_start();
 define('OAUTH2_CLIENT_ID', 'mje53ch80y8kzhppreusp1hax1s6iz');
 define('OAUTH2_CLIENT_SECRET', 'xthja1zsiodjb7mk24ooibmfkr63ol');
 define('REDIRECT_URI', 'http://localhost/oauth.php');
 
 $authorizeURL = 'https://api.twitch.tv/kraken/oauth2/authorize';
 $tokenURL = 'https://github.com/login/oauth/access_token';
-
-session_start();
 
 // Start the login process by sending the user to Twitch's authorization page
 if(get('action') == 'login') {
@@ -21,12 +16,13 @@ if(get('action') == 'login') {
     'client_id' => OAUTH2_CLIENT_ID,
     'redirect_uri' => REDIRECT_URI,
     'response_type' => 'code',
-    'scope' => 'user:edit+user:read:email+chat_login',
+    'scope' => 'user:edit user:read:email chat_login',
     'state' => $_SESSION['state']
   );
 
   // Redirect the user to Twitch's authorization page
-  header('Location: ' . $authorizeURL . '?' . http_build_query($params));
+  $authpage = $authorizeURL . '?' . http_build_query($params);
+  header('Location: ' . $authpage);
   die();
 }
 
@@ -89,6 +85,3 @@ function session($key, $default=NULL) {
 }
 
 ?>
-
-</body>
-</html>
