@@ -6,8 +6,14 @@
 		<input type="button" value="Authenticate with twitch (?)">
 		</form>
 
-		<form action="test.cgi">
-		<input type="button" value="Do a test python thing?">
+
+		<form action="http://localhost:5000/login" method="post">
+  		<input type="text" name="foo" value="foo"/>
+  		<input type="submit" />
+		</form>
+
+		<form action="pythontest.php" method="post">
+		<input type="button" value="test python server">
 		</form>
     	
     </body>
