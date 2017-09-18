@@ -77,6 +77,8 @@ class TwitchBot(irc.bot.SingleServerIRCBot):
         return False 
 
     def set_question(self, e, question):
+        if self.poll is None:
+            return;
         self.poll = p.Poll(question);
         
     def add_poll(self, e, args):
@@ -104,14 +106,12 @@ class TwitchBot(irc.bot.SingleServerIRCBot):
     def add_vote(self, e, args):
         userId = (item for item in e.tags if item["key"] == "user-id").next()["value"]
         
-        #TODO require bits for real
-        bits = 100
-        bitsFound = False
+        bits = 0
         
         for item in e.tags:
             if 'bits' in item.values():
                 bits = int(item['value'])
-                bitsFound = True
+                break
         
         print args
         
