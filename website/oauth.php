@@ -4,7 +4,7 @@ define('OAUTH2_CLIENT_SECRET', 'xthja1zsiodjb7mk24ooibmfkr63ol');
 define('REDIRECT_URI', 'http://localhost/oauth.php');
 
 $authorizeURL = 'https://api.twitch.tv/kraken/oauth2/authorize';
-$tokenURL = 'https://github.com/login/oauth/access_token';
+$tokenURL = 'https://api.twitch.tv/kraken/oauth2/token';
 
 // Start the login process by sending the user to Twitch's authorization page
 if(get('action') == 'login') {
@@ -34,8 +34,6 @@ if(get('code')) {
     die();
   }
 
-  echo('code is' . get('code'));
-
   // Exchange the auth code for a token
   $token = apiRequest($tokenURL, array(
     'client_id' => OAUTH2_CLIENT_ID,
@@ -50,6 +48,9 @@ if(get('code')) {
   header('Location: ' . $_SERVER['PHP_SELF']);
 }
 
+echo '<pre>';
+var_dump($_SESSION);
+echo '</pre>';
 if(session('access_token')) {
   echo '<h3>Logged In!</h3>';
 } else {

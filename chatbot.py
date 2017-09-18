@@ -45,7 +45,6 @@ class TwitchBot(irc.bot.SingleServerIRCBot):
         c.join(self.channel)
 
     def on_pubmsg(self, c, e):
-
         for item in e.tags:
             if 'bits' in item.values():
                 bits = item['value']
@@ -77,7 +76,7 @@ class TwitchBot(irc.bot.SingleServerIRCBot):
         return False 
 
     def set_question(self, e, question):
-        if self.poll is None:
+        if not self.poll is None:
             return;
         self.poll = p.Poll(question);
         
@@ -90,7 +89,6 @@ class TwitchBot(irc.bot.SingleServerIRCBot):
             return;
         if self.poll.has_started():
             self.end_poll(e)
-        
         self.poll.set_options(args)
 
         message1 = "Starting poll! Options are: "
