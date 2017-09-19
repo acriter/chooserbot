@@ -1,10 +1,10 @@
 <?php session_start();
-$serverUrl = 'localhost:5000';
+$serverUrl = 'http://localhost:5000/login';
 $params = array(
 	'foo' => 'bar'
 );
 
 $authpage = $serverUrl . '?' . http_build_query($params);
-//header('Location: ' . $authpage);
+header('Location: ' . $authpage);
 die();
 ?>
