@@ -11,9 +11,10 @@ token = 'sohelk7b417cwnzxgt4eyux34r1wd9'
 def index():
     return 'got here'
 
-@app.route('/dashboard', methods=['GET'])
-def dashboard():
-    return render_template('dashboard.html')
+@app.route('/dashboard/', methods=['GET'])
+@app.route('/dashboard/<name>', methods=['GET'])
+def dashboard(name=None):
+    return render_template('dashboard.html', name=name)
 
 @app.route('/join', methods=['POST'])
 def join():

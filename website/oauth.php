@@ -1,11 +1,15 @@
 <?php session_start();
+
+include 'oauthfunctions.php';
+
 define('OAUTH2_CLIENT_ID', 'mje53ch80y8kzhppreusp1hax1s6iz');
 define('OAUTH2_CLIENT_SECRET', 'xthja1zsiodjb7mk24ooibmfkr63ol');
 define('REDIRECT_URI', 'http://localhost/oauth.php');
 
 $pythonServerBaseURL = 'http://localhost:5000';
-$pythonServerBotJoin = $pythonServerBaseURL . '/join';  
-$pythonServerBotDashboard = $pythonServerBaseURL . '/dashboard';
+$pythonServerBotJoin = $pythonServerBaseURL . '/join';
+
+$localServerBotDashboard = 'dashboard.php';
 $authorizeURL = 'https://api.twitch.tv/kraken/oauth2/authorize';
 $tokenURL = 'https://api.twitch.tv/kraken/oauth2/token';
 $userURL = 'https://api.twitch.tv/helix/users';
@@ -58,8 +62,9 @@ if(session('access_token')) {
     $userInfo = apiRequest($userURL);
     $_SESSION['username'] = $userInfo->data[0]->login;
   }
+
   sendTwitchBot();
-  header('Location: ' . $pythonServerBotDashboard);
+  header('Location: ' . $localServerBotDashboard);
   die();
 } else {
   echo '<h3>Not logged in</h3>';
@@ -78,33 +83,4 @@ function sendTwitchBot() {
   $response = curl_exec($ch);
   return json_decode($response);
 }
-
-function apiRequest($url, $post=FALSE, $headers=array()) {
-  $ch = curl_init($url);
-  curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-
-  if($post)
-    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($post));
-
-  $headers[] = 'Accept: application/json';
-
-  if(session('access_token')) {
-    $headers[] = 'Authorization: Bearer ' . session('access_token');
-    $headers[] = 'Client-ID: ' . OAUTH2_CLIENT_ID;
-  }
-
-  curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-
-  $response = curl_exec($ch);
-  return json_decode($response);
-}
-
-function get($key, $default=NULL) {
-  return array_key_exists($key, $_GET) ? $_GET[$key] : $default;
-}
-
-function session($key, $default=NULL) {
-  return array_key_exists($key, $_SESSION) ? $_SESSION[$key] : $default;
-}
-
 ?>
