@@ -46,6 +46,10 @@ function get($key, $default=NULL) {
   return array_key_exists($key, $_GET) ? $_GET[$key] : $default;
 }
 
+function post($key, $default=NULL) {
+  return array_key_exists($key, $_POST) ? $_POST[$key] : $default;
+}
+
 function session($key, $default=NULL) {
   return array_key_exists($key, $_SESSION) ? $_SESSION[$key] : $default;
 }

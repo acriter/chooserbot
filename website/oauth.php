@@ -1,13 +1,10 @@
 <?php session_start();
-
 include 'oauthfunctions.php';
+include 'botfunctions.php';
 
 define('OAUTH2_CLIENT_ID', 'mje53ch80y8kzhppreusp1hax1s6iz');
 define('OAUTH2_CLIENT_SECRET', 'xthja1zsiodjb7mk24ooibmfkr63ol');
 define('REDIRECT_URI', 'http://localhost/oauth.php');
-
-$pythonServerBaseURL = 'http://localhost:5000';
-$pythonServerBotJoin = $pythonServerBaseURL . '/join';
 
 $localServerBotDashboard = 'dashboard.php';
 $authorizeURL = 'https://api.twitch.tv/kraken/oauth2/authorize';
@@ -69,18 +66,5 @@ if(session('access_token')) {
 } else {
   echo '<h3>Not logged in</h3>';
   echo '<p><a href="?action=login">Log In</a></p>';
-}
-
-function sendTwitchBot() {
-  $ch = curl_init($pythonServerBotJoin);
-  $headers[] = 'Accept: application/json';
-  curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query(
-    array(
-    'username' => $_SESSION['username']
-    )));
-  curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-
-  $response = curl_exec($ch);
-  return json_decode($response);
 }
 ?>

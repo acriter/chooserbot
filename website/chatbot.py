@@ -77,7 +77,10 @@ class TwitchBot(irc.bot.SingleServerIRCBot):
 
     def set_question(self, e, question):
         if not self.poll is None:
-            return;
+            if self.poll.has_started():
+                return
+            else:
+                self.end_poll(e)
         self.poll = p.Poll(question);
         
     def add_poll(self, e, args):
