@@ -3,10 +3,10 @@ from flask import request
 from flask import render_template
 
 import chatbot as cb
+
 app = Flask(__name__)
 
 token = 'sohelk7b417cwnzxgt4eyux34r1wd9'
-bot = None
 
 @app.route('/', methods=['GET','POST'])
 def index():
@@ -19,18 +19,14 @@ def dashboard(name=None):
 
 @app.route('/join', methods=['POST'])
 def join():
-    if not bot is None:
-        bot = cb.TwitchBot('acriterdev', 'vr0zkeoavnuf7kxmunaezpjpz8zcag', token, request.form['username'])
-        bot.start()
+    bot = cb.TwitchBot('acriterdev', 'vr0zkeoavnuf7kxmunaezpjpz8zcag', token, request.form['username'])
+    bot.start()
     return request.form['username']
 
 @app.route('/setquestion', methods=['POST'])
 def setQuestion():
-    if not bot is None:
-        bot.set_question(None, request.form['question'])
-        return "Setting question to " + request.form['question'] + " was successful!"
-    else:
-        return "Error setting question: bot not set up"
+    #bot.set_question(None, request.form['question'])
+    return "Setting question to " + request.form['question'] + " was successful!"
 
 if __name__ == "__main__":
     app.run()
