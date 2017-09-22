@@ -28,7 +28,9 @@ def join():
 def setQuestion():
     if not bot is None:
         bot.set_question(None, request.form['question'])
-    return request.form['question']
+        return "Setting question to " + request.form['question'] + " was successful!"
+    else:
+        return "Error setting question: bot not set up"
 
 if __name__ == "__main__":
     app.run()

@@ -1,6 +1,6 @@
 <?php session_start();
-include 'oauthfunctions.php';
-include 'botfunctions.php';
+include_once 'oauthfunctions.php';
+include_once 'botfunctions.php';
 
 define('OAUTH2_CLIENT_ID', 'mje53ch80y8kzhppreusp1hax1s6iz');
 define('OAUTH2_CLIENT_SECRET', 'xthja1zsiodjb7mk24ooibmfkr63ol');

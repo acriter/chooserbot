@@ -1,5 +1,5 @@
 <?php session_start();
-include 'oauthfunctions.php';
+include_once 'oauthfunctions.php';
 
 $pythonServerBaseURL = 'http://localhost:5000';
 $pythonServerBotJoin = $pythonServerBaseURL . '/join';
